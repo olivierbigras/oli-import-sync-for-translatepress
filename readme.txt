@@ -1,10 +1,11 @@
-﻿=== Oli Import Sync for TranslatePress ===
-Contributors: olivierbigras
+=== Oli Import Sync for TranslatePress ===
+Contributors: bigrat95
+Donate link: https://www.paypal.com/donate/?hosted_button_id=29SAPKFAHMTNW
 Tags: translatepress, multilingual, translation, woocommerce, wp-all-import
 Requires at least: 5.0
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 3.16.0
+Stable tag: 3.16.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -102,6 +103,12 @@ No. This is an independent third-party integration. "TranslatePress" is referenc
 
 == Changelog ==
 
+= 3.16.2 =
+* NEW: Settings and Donate links on the Plugins screen, optional support notice on the settings screen, footer donation link, and Donate link on the WordPress.org plugin page (PayPal)
+
+= 3.16.1 =
+* FIX: Contributors field now uses the WordPress.org username (`bigrat95`) so the directory import no longer ignores it
+
 = 3.16.0 =
 * NEW: Mirror WordPress's `-2`, `-3` slug auto-disambiguator from the EN slug onto the auto-derived translated slug
 * Prevents TranslatePress' `make_slugs_unique()` from clobbering trailing numbers in titles (e.g. "...inoxydable-304" no longer becomes "...inoxydable-305")
@@ -198,6 +205,12 @@ No. This is an independent third-party integration. "TranslatePress" is referenc
 * Initial release
 
 == Upgrade Notice ==
+
+= 3.16.2 =
+Adds Donate / support links (Plugins screen, settings notice, WordPress.org Donate link).
+
+= 3.16.1 =
+Fixes the WordPress.org Contributors field (must be a wordpress.org username). No functional changes.
 
 = 3.16.0 =
 Auto-derived translated slugs now mirror WordPress's `-2`, `-3` disambiguator from the EN slug, fixing cases where TranslatePress would alter trailing numbers in titles (e.g. "304" -> "305").

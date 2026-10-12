@@ -1,9 +1,9 @@
-﻿<?php
+<?php
 /**
  * Plugin Name: Oli Import Sync for TranslatePress
  * Plugin URI: https://olivierbigras.com/
  * Description: Sync translations from WP All Import into TranslatePress via the official Custom API. Map _trp_title_[lang] and _trp_content_[lang] custom fields in your import. Not affiliated with TranslatePress.
- * Version: 3.16.0
+ * Version: 3.16.2
  * Author: Olivier Bigras
  * Author URI: https://olivierbigras.com
  * License: GPL v2 or later
@@ -16,11 +16,12 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-define( 'OLI_IMPORT_SYNC_TRP_VERSION', '3.16.0' );
+define( 'OLI_IMPORT_SYNC_TRP_VERSION', '3.16.2' );
+define( 'OLI_IMPORT_SYNC_TRP_DONATE_URL', 'https://www.paypal.com/donate/?hosted_button_id=29SAPKFAHMTNW' );
 
 /**
  * =============================================================================
- * WP ALL IMPORT + TRANSLATEPRESS SYNC PLUGIN (v3.16.0 - Using Official API)
+ * WP ALL IMPORT + TRANSLATEPRESS SYNC PLUGIN (v3.16.1 - Using Official API)
  * =============================================================================
  * 
  * REQUIRES: TranslatePress Custom API plugin
@@ -117,6 +118,103 @@ class WPAI_TranslatePress_Sync {
         add_action( 'admin_init', array( $this, 'handle_clear_log' ) );
         add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_assets' ), 10, 1 );
         add_action( 'plugins_loaded', array( $this, 'load_textdomain' ) );
+        add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), array( $this, 'plugin_action_links' ) );
+        add_filter( 'plugin_row_meta', array( $this, 'plugin_row_meta' ), 10, 2 );
+        add_action( 'admin_notices', array( $this, 'donate_notice' ) );
+        add_action( 'wp_ajax_oli_import_sync_trp_dismiss_donate', array( $this, 'ajax_dismiss_donate' ) );
+    }
+
+    /**
+     * Settings + Donate on the Plugins screen.
+     *
+     * @param string[] $links Links.
+     * @return string[]
+     */
+    public function plugin_action_links( $links ) {
+        $settings = '<a href="' . esc_url( admin_url( 'options-general.php?page=wpai-trp-sync' ) ) . '">' . esc_html__( 'Settings', 'oli-import-sync-for-translatepress' ) . '</a>';
+        $donate   = '<a href="' . esc_url( OLI_IMPORT_SYNC_TRP_DONATE_URL ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Donate', 'oli-import-sync-for-translatepress' ) . '</a>';
+        array_unshift( $links, $settings, $donate );
+        return $links;
+    }
+
+    /**
+     * Donate in plugin meta row.
+     *
+     * @param string[] $links Links.
+     * @param string   $file  Basename.
+     * @return string[]
+     */
+    public function plugin_row_meta( $links, $file ) {
+        if ( $file !== plugin_basename( __FILE__ ) ) {
+            return $links;
+        }
+        $links[] = '<a href="' . esc_url( OLI_IMPORT_SYNC_TRP_DONATE_URL ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Donate', 'oli-import-sync-for-translatepress' ) . '</a>';
+        return $links;
+    }
+
+    /**
+     * Dismissible support notice on the settings screen.
+     */
+    public function donate_notice() {
+        $screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+        if ( ! $screen || 'settings_page_wpai-trp-sync' !== $screen->id ) {
+            return;
+        }
+        if ( ! current_user_can( 'manage_options' ) ) {
+            return;
+        }
+        if ( get_user_meta( get_current_user_id(), 'oli_import_sync_trp_donate_dismissed', true ) ) {
+            return;
+        }
+        ?>
+        <div class="notice notice-info is-dismissible oli-import-sync-trp-donate-notice">
+            <p>
+                <?php
+                echo wp_kses(
+                    sprintf(
+                        /* translators: %s: donate URL */
+                        __( 'Enjoying Oli Import Sync for TranslatePress? <a href="%s" target="_blank" rel="noopener noreferrer">Buy me a coffee</a> — your support keeps the plugin free and maintained.', 'oli-import-sync-for-translatepress' ),
+                        esc_url( OLI_IMPORT_SYNC_TRP_DONATE_URL )
+                    ),
+                    array(
+                        'a' => array(
+                            'href'   => true,
+                            'target' => true,
+                            'rel'    => true,
+                        ),
+                    )
+                );
+                ?>
+            </p>
+        </div>
+        <script>
+        (function () {
+            var notice = document.querySelector('.oli-import-sync-trp-donate-notice');
+            if (!notice || typeof oliImportSyncTrp === 'undefined') return;
+            notice.addEventListener('click', function (e) {
+                if (!e.target.classList.contains('notice-dismiss')) return;
+                var body = new FormData();
+                body.append('action', 'oli_import_sync_trp_dismiss_donate');
+                body.append('nonce', oliImportSyncTrp.donateNonce || '');
+                if (window.fetch) {
+                    fetch(oliImportSyncTrp.ajaxUrl, { method: 'POST', body: body, credentials: 'same-origin' });
+                }
+            });
+        })();
+        </script>
+        <?php
+    }
+
+    /**
+     * Persist donate notice dismissal.
+     */
+    public function ajax_dismiss_donate() {
+        check_ajax_referer( 'oli_import_sync_trp_donate', 'nonce' );
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( null, 403 );
+        }
+        update_user_meta( get_current_user_id(), 'oli_import_sync_trp_donate_dismissed', 1 );
+        wp_send_json_success();
     }
 
     /**
@@ -143,6 +241,18 @@ class WPAI_TranslatePress_Sync {
         $style_handle = 'oli-import-sync-trp-admin';
         wp_register_style( $style_handle, false, array(), OLI_IMPORT_SYNC_TRP_VERSION );
         wp_enqueue_style( $style_handle );
+
+        $script_handle = 'oli-import-sync-trp-admin';
+        wp_register_script( $script_handle, false, array(), OLI_IMPORT_SYNC_TRP_VERSION, true );
+        wp_enqueue_script( $script_handle );
+        wp_localize_script(
+            $script_handle,
+            'oliImportSyncTrp',
+            array(
+                'ajaxUrl'     => admin_url( 'admin-ajax.php' ),
+                'donateNonce' => wp_create_nonce( 'oli_import_sync_trp_donate' ),
+            )
+        );
 
         $inline_css = '
             .wpai-trp-field { display:inline-flex; align-items:center; gap:4px; }
@@ -1083,6 +1193,24 @@ class WPAI_TranslatePress_Sync {
             }
             ?>
             </div>
+            <p class="description" style="margin-top:20px;">
+                <?php
+                echo wp_kses(
+                    sprintf(
+                        /* translators: %s: donate URL */
+                        __( 'If this plugin helps you, please consider a <a href="%s" target="_blank" rel="noopener noreferrer">donation</a>. Thank you!', 'oli-import-sync-for-translatepress' ),
+                        esc_url( OLI_IMPORT_SYNC_TRP_DONATE_URL )
+                    ),
+                    array(
+                        'a' => array(
+                            'href'   => true,
+                            'target' => true,
+                            'rel'    => true,
+                        ),
+                    )
+                );
+                ?>
+            </p>
         </div>
         <?php
     }
