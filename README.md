@@ -5,7 +5,7 @@ Import multilingual content into TranslatePress when using WP All Import. Third-
 **Author:** Olivier Bigras  
 **Website:** [olivierbigras.com](https://olivierbigras.com)  
 **Email:** oli@olivierbigras.com  
-**Version:** 3.16.0  
+**Version:** 3.17.0  
 **License:** GPL v2 or later
 
 ---
@@ -21,7 +21,7 @@ Import multilingual content into TranslatePress when using WP All Import. Third-
 
 ## Installation
 
-1. Download or copy the `wpai-translatepress-sync` folder
+1. Download or copy the `oli-import-sync-for-translatepress` folder
 2. Upload to `wp-content/plugins/` 
 3. Activate the plugin in WordPress → Plugins
 4. Ensure TranslatePress and TranslatePress Custom API are also active
@@ -266,7 +266,7 @@ Use these functions in your theme or other plugins:
 ### Add a single translation
 
 ```php
-wpai_trp_add_translation( 'Hello World', 'Bonjour le monde', 'fr_CA' );
+oli_import_sync_trp_add_translation( 'Hello World', 'Bonjour le monde', 'fr_CA' );
 ```
 
 ### Bulk add translations
@@ -278,7 +278,7 @@ $translations = array(
     'Welcome' => 'Bienvenue',
 );
 
-wpai_trp_bulk_add_translations( $translations, 'fr_CA' );
+oli_import_sync_trp_bulk_add_translations( $translations, 'fr_CA' );
 ```
 
 ---
@@ -357,6 +357,15 @@ define( 'WP_DEBUG_LOG', true );
 ---
 
 ## Changelog
+
+### 3.17.0
+- Main file renamed to `oli-import-sync-for-translatepress.php` (slug match). `wpai-translatepress-sync.php` is a header-less shim so existing activations are not dropped
+- Dashboard status output escaped; admin CSS/JS enqueued from files
+- Options migrated `wpai_trp_*` → `oli_import_sync_trp_*`
+- Class `Oli_Import_Sync_For_TranslatePress`; helpers `oli_import_sync_trp_*` (legacy `wpai_trp_*` wrappers remain)
+
+### 3.16.2
+- Settings and Donate links on the Plugins screen, optional support notice, footer donation link (PayPal)
 
 ### 3.16.0
 - **NEW:** Mirror WordPress's `-2`, `-3` slug auto-disambiguator from the EN slug onto auto-derived translated slugs
@@ -438,3 +447,4 @@ define( 'WP_DEBUG_LOG', true );
 For issues or questions:
 - **Email:** oli@olivierbigras.com
 - **Website:** [olivierbigras.com](https://olivierbigras.com)
+- **GitHub:** [github.com/olivierbigras/oli-import-sync-for-translatepress](https://github.com/olivierbigras/oli-import-sync-for-translatepress)

@@ -3,9 +3,9 @@ Contributors: bigrat95
 Donate link: https://www.paypal.com/donate/?hosted_button_id=29SAPKFAHMTNW
 Tags: translatepress, multilingual, translation, woocommerce, wp-all-import
 Requires at least: 5.0
-Tested up to: 6.9
+Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 3.16.2
+Stable tag: 3.17.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -44,6 +44,24 @@ Import multilingual content into TranslatePress when using WP All Import. Third-
 = Disclaimer =
 
 This is an unofficial integration plugin. "TranslatePress" is a trademark of Cozmoslabs and is referenced here only for compatibility purposes. This plugin is developed independently and is not endorsed by, sponsored by, or affiliated with Cozmoslabs.
+
+== External services ==
+
+This plugin does **not** send import data, post content, or translations to any remote service. Translation writes stay on your WordPress site (TranslatePress tables / Custom API).
+
+= PayPal Donate =
+
+Optional **Donate** / **Buy me a coffee** links (Plugins screen, settings screen, and this plugin page) open PayPal in a new tab when you click them. Nothing is sent until you click.
+
+* Destination: `https://www.paypal.com/donate/` (hosted button)
+* Data sent: whatever PayPal collects on that page after you choose to donate
+* Service: [PayPal](https://www.paypal.com/)
+* Terms: [https://www.paypal.com/webapps/mpp/ua/useragreement-full](https://www.paypal.com/webapps/mpp/ua/useragreement-full)
+* Privacy: [https://www.paypal.com/webapps/mpp/ua/privacy-full](https://www.paypal.com/webapps/mpp/ua/privacy-full)
+
+= Author website =
+
+The plugin header and documentation link to [https://olivierbigras.com](https://olivierbigras.com) and [https://github.com/olivierbigras/oli-import-sync-for-translatepress](https://github.com/olivierbigras/oli-import-sync-for-translatepress). These are ordinary hyperlinks; the plugin does not call those hosts in the background.
 
 == Installation ==
 
@@ -102,6 +120,14 @@ No. This is an independent third-party integration. "TranslatePress" is referenc
 3. Translations synced in TranslatePress
 
 == Changelog ==
+
+= 3.17.0 =
+* Main plugin file is now `oli-import-sync-for-translatepress.php` (matches the slug). `wpai-translatepress-sync.php` remains as a header-less shim so existing sites stay active
+* Escaped dashboard status output; admin CSS/JS live in files (no inline script/style or onclick handlers)
+* Options migrated from `wpai_trp_*` to `oli_import_sync_trp_*` (old keys copied then deleted)
+* Class renamed to `Oli_Import_Sync_For_TranslatePress`; helper functions prefixed `oli_import_sync_trp_*` (legacy `wpai_trp_*` wrappers kept)
+* Settings page slug: Settings → Oli Import Sync (`oli-import-sync-trp`); old `wpai-trp-sync` bookmarks redirect
+* Tested up to WordPress 7.1
 
 = 3.16.2 =
 * NEW: Settings and Donate links on the Plugins screen, optional support notice on the settings screen, footer donation link, and Donate link on the WordPress.org plugin page (PayPal)
@@ -205,6 +231,9 @@ No. This is an independent third-party integration. "TranslatePress" is referenc
 * Initial release
 
 == Upgrade Notice ==
+
+= 3.17.0 =
+Main file renamed to match the plugin slug. Existing activations keep working via a compatibility shim; settings are copied to the new option names automatically.
 
 = 3.16.2 =
 Adds Donate / support links (Plugins screen, settings notice, WordPress.org Donate link).
