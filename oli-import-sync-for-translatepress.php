@@ -1196,8 +1196,9 @@ class Oli_Import_Sync_For_TranslatePress {
         }
 
         $args = array( 'page' => 'oli-import-sync-trp' );
-        if ( isset( $_GET['tab'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-            $args['tab'] = sanitize_key( wp_unslash( $_GET['tab'] ) );
+        $tab  = isset( $_GET['tab'] ) ? sanitize_key( wp_unslash( $_GET['tab'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        if ( '' !== $tab ) {
+            $args['tab'] = $tab;
         }
 
         wp_safe_redirect( add_query_arg( $args, admin_url( 'options-general.php' ) ) );
