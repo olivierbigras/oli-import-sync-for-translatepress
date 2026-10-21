@@ -361,20 +361,14 @@ class Oli_Import_Sync_For_TranslatePress {
             return;
         }
 
-        $line = '[' . current_time( 'Y-m-d H:i:s' ) . '] ' . $message . "\n";
-
         if ( $plugin_logging && is_string( $this->log_file ) && '' !== $this->log_file ) {
+            $line = '[' . current_time( 'Y-m-d H:i:s' ) . '] ' . $message . "\n";
             file_put_contents( $this->log_file, $line, FILE_APPEND | LOCK_EX );
         }
 
         if ( $wp_debug_log ) {
-            $debug_file = WP_DEBUG_LOG;
-            if ( ! is_string( $debug_file ) || '' === $debug_file || '1' === $debug_file ) {
-                $debug_file = defined( 'WP_CONTENT_DIR' ) ? WP_CONTENT_DIR . '/debug.log' : '';
-            }
-            if ( '' !== $debug_file ) {
-                file_put_contents( $debug_file, '[Oli-Import-Sync-TRP] ' . $line, FILE_APPEND | LOCK_EX );
-            }
+            // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- only when WP_DEBUG_LOG is active.
+            error_log( '[Oli-Import-Sync-TRP] ' . $message );
         }
     }
 
