@@ -5,7 +5,7 @@ Import multilingual content into TranslatePress when using WP All Import. Third-
 **Author:** Olivier Bigras  
 **Website:** [olivierbigras.com](https://olivierbigras.com)  
 **Email:** oli@olivierbigras.com  
-**Version:** 3.17.0  
+**Version:** 3.17.1  
 **License:** GPL v2 or later
 
 ---
@@ -358,11 +358,18 @@ define( 'WP_DEBUG_LOG', true );
 
 ## Changelog
 
+### 3.17.1
+- Translators comment on the Field Reference sprintf
+- Removed unprefixed `wpai_trp_*` helpers (use `oli_import_sync_trp_*`)
+- Logs only when plugin logging is on or `WP_DEBUG_LOG` is active
+- Shim reads raw `active_plugins` and rewrites only this plugin's path
+- `.distignore` / `export-ignore` for the distribution ZIP
+
 ### 3.17.0
 - Main file renamed to `oli-import-sync-for-translatepress.php` (slug match). `wpai-translatepress-sync.php` is a header-less shim so existing activations are not dropped
 - Dashboard status output escaped; admin CSS/JS enqueued from files
 - Options migrated `wpai_trp_*` → `oli_import_sync_trp_*`
-- Class `Oli_Import_Sync_For_TranslatePress`; helpers `oli_import_sync_trp_*` (legacy `wpai_trp_*` wrappers remain)
+- Class `Oli_Import_Sync_For_TranslatePress`; helpers `oli_import_sync_trp_*`
 
 ### 3.16.2
 - Settings and Donate links on the Plugins screen, optional support notice, footer donation link (PayPal)

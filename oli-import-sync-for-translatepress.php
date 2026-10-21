@@ -3,7 +3,7 @@
  * Plugin Name: Oli Import Sync for TranslatePress
  * Plugin URI: https://github.com/olivierbigras/oli-import-sync-for-translatepress
  * Description: Sync translations from WP All Import into TranslatePress via the official Custom API. Map _trp_title_[lang] and _trp_content_[lang] custom fields in your import. Not affiliated with TranslatePress.
- * Version: 3.17.0
+ * Version: 3.17.1
  * Author: Olivier Bigras
  * Author URI: https://olivierbigras.com
  * License: GPL v2 or later
@@ -25,7 +25,7 @@ if ( defined( 'OLI_IMPORT_SYNC_TRP_LOADED' ) ) {
 }
 define( 'OLI_IMPORT_SYNC_TRP_LOADED', true );
 
-define( 'OLI_IMPORT_SYNC_TRP_VERSION', '3.17.0' );
+define( 'OLI_IMPORT_SYNC_TRP_VERSION', '3.17.1' );
 define( 'OLI_IMPORT_SYNC_TRP_FILE', __FILE__ );
 define( 'OLI_IMPORT_SYNC_TRP_DIR', plugin_dir_path( __FILE__ ) );
 define( 'OLI_IMPORT_SYNC_TRP_DONATE_URL', 'https://www.paypal.com/donate/?hosted_button_id=29SAPKFAHMTNW' );
@@ -65,7 +65,7 @@ function oli_import_sync_trp_migrate_legacy_options() {
 
 /**
  * =============================================================================
- * WP ALL IMPORT + TRANSLATEPRESS SYNC PLUGIN (v3.17.0 - Using Official API)
+ * WP ALL IMPORT + TRANSLATEPRESS SYNC PLUGIN (v3.17.1 - Using Official API)
  * =============================================================================
  * 
  * REQUIRES: TranslatePress Custom API plugin
@@ -351,18 +351,31 @@ class Oli_Import_Sync_For_TranslatePress {
 
     /**
      * Log messages for debugging.
-     * Writes to the plugin's own log file when logging is enabled.
+     * Writes only when plugin logging is enabled and/or WP_DEBUG_LOG is active.
      */
     private function log( $message ) {
-        if ( ! get_option( 'oli_import_sync_trp_logging_enabled', 0 ) ) {
+        $plugin_logging = (bool) get_option( 'oli_import_sync_trp_logging_enabled', 0 );
+        $wp_debug_log   = defined( 'WP_DEBUG_LOG' ) && WP_DEBUG_LOG;
+
+        if ( ! $plugin_logging && ! $wp_debug_log ) {
             return;
         }
+
         $line = '[' . current_time( 'Y-m-d H:i:s' ) . '] ' . $message . "\n";
-        // Also write to debug.log if WP_DEBUG is on
-        if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-            error_log( '[WPAI-TRP-Sync] ' . $message );
+
+        if ( $plugin_logging && is_string( $this->log_file ) && '' !== $this->log_file ) {
+            file_put_contents( $this->log_file, $line, FILE_APPEND | LOCK_EX );
         }
-        @file_put_contents( $this->log_file, $line, FILE_APPEND | LOCK_EX );
+
+        if ( $wp_debug_log ) {
+            $debug_file = WP_DEBUG_LOG;
+            if ( ! is_string( $debug_file ) || '' === $debug_file || '1' === $debug_file ) {
+                $debug_file = defined( 'WP_CONTENT_DIR' ) ? WP_CONTENT_DIR . '/debug.log' : '';
+            }
+            if ( '' !== $debug_file ) {
+                file_put_contents( $debug_file, '[Oli-Import-Sync-TRP] ' . $line, FILE_APPEND | LOCK_EX );
+            }
+        }
     }
 
     /**
@@ -1422,7 +1435,19 @@ class Oli_Import_Sync_For_TranslatePress {
             <h2><?php echo esc_html__( 'How It Works', 'oli-import-sync-for-translatepress' ); ?></h2>
             <ol>
                 <li><?php echo wp_kses( __( 'Map your <strong>default language</strong> fields normally in WP All Import (Title, Content, Excerpt).', 'oli-import-sync-for-translatepress' ), array( 'strong' => array() ) ); ?></li>
-                <li><?php echo wp_kses( sprintf( __( 'Add <strong>custom fields</strong> for each translation (see <a href="%s">Field Reference</a>).', 'oli-import-sync-for-translatepress' ), esc_url( $fields_url ) ), array( 'strong' => array(), 'a' => array( 'href' => true ) ) ); ?></li>
+                <li><?php
+                echo wp_kses(
+                    sprintf(
+                        /* translators: %s: URL of the Field Reference tab. */
+                        __( 'Add <strong>custom fields</strong> for each translation (see <a href="%s">Field Reference</a>).', 'oli-import-sync-for-translatepress' ),
+                        esc_url( $fields_url )
+                    ),
+                    array(
+                        'strong' => array(),
+                        'a'      => array( 'href' => true ),
+                    )
+                );
+                ?></li>
                 <li><?php echo wp_kses( __( 'Run the import — translations are <strong>automatically synced</strong> to TranslatePress.', 'oli-import-sync-for-translatepress' ), array( 'strong' => array() ) ); ?></li>
             </ol>
             <h3><?php echo esc_html__( 'Automatic Features', 'oli-import-sync-for-translatepress' ); ?></h3>
@@ -1641,27 +1666,4 @@ function oli_import_sync_trp_bulk_add_translations( $translations, $lang = 'fr_C
     }
 
     return trpc_insert_translations_bulk( $formatted, $lang, array( 'status' => 2 ) );
-}
-
-/**
- * Legacy helper name. Use oli_import_sync_trp_add_translation().
- *
- * @param string $original   The original string.
- * @param string $translated The translated string.
- * @param string $lang       Target language code.
- * @return array|WP_Error
- */
-function wpai_trp_add_translation( $original, $translated, $lang = 'fr_CA' ) {
-    return oli_import_sync_trp_add_translation( $original, $translated, $lang );
-}
-
-/**
- * Legacy helper name. Use oli_import_sync_trp_bulk_add_translations().
- *
- * @param array  $translations Array of 'original' => 'translated' pairs.
- * @param string $lang         Target language code.
- * @return array|WP_Error
- */
-function wpai_trp_bulk_add_translations( $translations, $lang = 'fr_CA' ) {
-    return oli_import_sync_trp_bulk_add_translations( $translations, $lang );
 }

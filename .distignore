@@ -1,0 +1,34 @@
+# Development and VCS files excluded from the distribution ZIP.
+.git
+.github
+.gitignore
+.gitattributes
+.distignore
+
+# Tests, tooling, and package manifests
+tests
+bin
+phpcs.xml
+phpcs.xml.dist
+.phpcs.xml
+.phpcs.xml.dist
+phpunit.xml
+phpunit.xml.dist
+composer.json
+composer.lock
+composer.phar
+package.json
+package-lock.json
+npm-shrinkwrap.json
+yarn.lock
+pnpm-lock.yaml
+node_modules
+
+# Internal markdown (keep readme.txt)
+*.md
+
+# Dev scripts
+*.sh
+Makefile
+phpcs.xml.dist
+phpunit.xml.dist

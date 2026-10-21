@@ -2,6 +2,17 @@
 
 All notable changes to Oli Import Sync for TranslatePress are documented here.
 
+## 3.17.1 – 2026-10-21
+
+WordPress.org / Plugin Check follow-up on 3.17.0.
+
+- Translators comment on the Field Reference `sprintf( __( … %s … ) )`. The other two `sprintf( __( … ) )` calls already had one.
+- Removed unprefixed legacy helpers `wpai_trp_add_translation()` and `wpai_trp_bulk_add_translations()`. Use `oli_import_sync_trp_*`.
+- Logging writes only when plugin logging is enabled or `WP_DEBUG_LOG` is active (no unconditional `error_log()`).
+- Compatibility shim reads raw `active_plugins` / `active_sitewide_plugins` (no `option_*` filters) and rewrites only this plugin's path, so `wp --skip-plugins` cannot persist a filtered list.
+- `.distignore` and `.gitattributes` `export-ignore` drop tests, tooling, internal markdown, and other dev files from the ZIP. `readme.txt` is kept.
+- Plugin URI remains https://github.com/olivierbigras/oli-import-sync-for-translatepress
+
 ## 3.17.0 – 2026-10-21
 
 Prepared 3.16.2 for wordpress.org (main file = slug, escaped admin output, prefixed options).
@@ -16,7 +27,7 @@ Prepared 3.16.2 for wordpress.org (main file = slug, escaped admin output, prefi
 
 - Copies `wpai_trp_logging_enabled` → `oli_import_sync_trp_logging_enabled` and `wpai_trp_auto_slug_enabled` → `oli_import_sync_trp_auto_slug_enabled`, then deletes the old keys.
 - Class: `Oli_Import_Sync_For_TranslatePress`.
-- Helpers: `oli_import_sync_trp_add_translation()` and `oli_import_sync_trp_bulk_add_translations()`. Legacy `wpai_trp_*` names still work.
+- Helpers: `oli_import_sync_trp_add_translation()` and `oli_import_sync_trp_bulk_add_translations()`.
 
 ### WordPress.org / coding
 
