@@ -2,7 +2,7 @@
 # This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Oli Import Sync for TranslatePress 3.17.3\n"
+"Project-Id-Version: Oli Import Sync for TranslatePress 3.17.4\n"
 "Report-Msgid-Bugs-To: https://github.com/olivierbigras/oli-import-sync-for-translatepress\n"
 "Last-Translator: Olivier Bigras\n"
 "Language-Team: Olivier Bigras\n"
