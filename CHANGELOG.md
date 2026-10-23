@@ -2,6 +2,10 @@
 
 All notable changes to Oli Import Sync for TranslatePress are documented here.
 
+## 3.17.4 – 2026-10-23
+
+- Normalize post IDs from WP All Import hooks: accept int, numeric string, or `WP_Post` (`->ID`); ignore invalid values. Stops "Object of class WP_Post could not be converted to int" during imports, including when plugin logging is off.
+
 ## 3.17.3 – 2026-10-23
 
 QA follow-up on 3.17.2.

@@ -5,7 +5,7 @@ Tags: translatepress, multilingual, translation, woocommerce, wp-all-import
 Requires at least: 5.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 3.17.3
+Stable tag: 3.17.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -120,6 +120,9 @@ No. This is an independent third-party integration. "TranslatePress" is referenc
 3. Translations synced in TranslatePress
 
 == Changelog ==
+
+= 3.17.4 =
+* FIX: Normalize WP All Import hook post IDs (int, numeric string, or `WP_Post`) so PHP no longer warns when a post object is passed
 
 = 3.17.3 =
 * FIX: Normalize only posts collected on `pmxi_saved_post`; do not treat the WPAI import ID as a post
@@ -248,6 +251,9 @@ No. This is an independent third-party integration. "TranslatePress" is referenc
 * Initial release
 
 == Upgrade Notice ==
+
+= 3.17.4 =
+Fixes PHP warnings during WP All Import when a post object is passed instead of a post ID.
 
 = 3.17.3 =
 Keeps the plugin active from 3.16.2, 3.17.0, and 3.17.1. Import log moves to uploads. Import IDs are no longer treated as post IDs.

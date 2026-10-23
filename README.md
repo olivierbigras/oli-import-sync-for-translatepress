@@ -5,7 +5,7 @@ Import multilingual content into TranslatePress when using WP All Import. Third-
 **Author:** Olivier Bigras  
 **Website:** [olivierbigras.com](https://olivierbigras.com)  
 **Email:** oli@olivierbigras.com  
-**Version:** 3.17.3  
+**Version:** 3.17.4  
 **License:** GPL v2 or later
 
 ---
@@ -357,6 +357,9 @@ define( 'WP_DEBUG_LOG', true );
 ---
 
 ## Changelog
+
+### 3.17.4
+- Normalize WP All Import hook post IDs (int, numeric string, or `WP_Post`) so PHP does not warn when a post object is passed
 
 ### 3.17.3
 - Normalize only posts tracked on `pmxi_saved_post` (`pmxi_after_xml_import`); never treat the WPAI import ID as a post

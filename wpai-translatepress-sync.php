@@ -3,7 +3,7 @@
  * Plugin Name: Oli Import Sync for TranslatePress
  * Plugin URI: https://github.com/olivierbigras/oli-import-sync-for-translatepress
  * Description: Sync translations from WP All Import into TranslatePress via the official Custom API. Map _trp_title_[lang] and _trp_content_[lang] custom fields in your import. Not affiliated with TranslatePress.
- * Version: 3.17.3
+ * Version: 3.17.4
  * Author: Olivier Bigras
  * Author URI: https://olivierbigras.com
  * License: GPL v2 or later
@@ -25,7 +25,7 @@ if ( defined( 'OLI_IMPORT_SYNC_TRP_LOADED' ) ) {
 }
 define( 'OLI_IMPORT_SYNC_TRP_LOADED', true );
 
-define( 'OLI_IMPORT_SYNC_TRP_VERSION', '3.17.3' );
+define( 'OLI_IMPORT_SYNC_TRP_VERSION', '3.17.4' );
 define( 'OLI_IMPORT_SYNC_TRP_FILE', __FILE__ );
 define( 'OLI_IMPORT_SYNC_TRP_DIR', plugin_dir_path( __FILE__ ) );
 define( 'OLI_IMPORT_SYNC_TRP_DONATE_URL', 'https://www.paypal.com/donate/?hosted_button_id=29SAPKFAHMTNW' );
@@ -72,6 +72,32 @@ function oli_import_sync_trp_safe_table( $table ) {
 function oli_import_sync_trp_lang_token( $lang ) {
 	$lang = strtolower( str_replace( '-', '_', (string) $lang ) );
 	return preg_replace( '/[^a-z0-9_]/', '', $lang );
+}
+
+/**
+ * Normalize a post ID from WP All Import hook arguments.
+ *
+ * Accepts an integer, a numeric string, or a WP_Post (uses ->ID).
+ * Returns 0 when the value cannot be used as a post ID.
+ *
+ * @param mixed $post_id Candidate post ID or post object.
+ * @return int Post ID greater than 0, or 0 if invalid.
+ */
+function oli_import_sync_trp_normalize_post_id( $post_id ) {
+	if ( $post_id instanceof WP_Post ) {
+		$post_id = isset( $post_id->ID ) ? $post_id->ID : 0;
+	}
+
+	if ( is_int( $post_id ) ) {
+		return $post_id > 0 ? $post_id : 0;
+	}
+
+	if ( is_string( $post_id ) && is_numeric( $post_id ) ) {
+		$post_id = (int) $post_id;
+		return $post_id > 0 ? $post_id : 0;
+	}
+
+	return 0;
 }
 
 /**
@@ -344,7 +370,7 @@ function oli_import_sync_trp_migrate_legacy_options() {
 
 /**
  * =============================================================================
- * WP ALL IMPORT + TRANSLATEPRESS SYNC PLUGIN (v3.17.3 - Using Official API)
+ * WP ALL IMPORT + TRANSLATEPRESS SYNC PLUGIN (v3.17.4 - Using Official API)
  * =============================================================================
  * 
  * REQUIRES: TranslatePress Custom API plugin
@@ -591,13 +617,15 @@ class Oli_Import_Sync_For_TranslatePress {
      * Strips all paragraph separators so wpautop() wraps in ONE <p> tag
      * 
      * @since 3.13.0 Strips to spaces instead of converting to <br>
-     * @param array $article_data Post data being imported
-     * @param object $import Import object
-     * @param int $post_id Post ID (0 for new posts)
-     * @param int $current_position Current import position
+     * @param array               $article_data     Post data being imported
+     * @param object              $import           Import object
+     * @param int|string|WP_Post  $post_id          Post ID or post object (0 / empty for new posts)
+     * @param int                 $current_position Current import position
      * @return array Modified article data
      */
     public function convert_linebreaks_before_save( $article_data, $import, $post_id, $current_position ) {
+        $post_id = oli_import_sync_trp_normalize_post_id( $post_id );
+
         try {
             if ( ! is_array( $article_data ) ) {
                 return $article_data;
@@ -817,8 +845,17 @@ class Oli_Import_Sync_For_TranslatePress {
 
     /**
      * Sync translations after WP All Import saves a post
+     *
+     * @param int|string|WP_Post $post_id   Post ID or post object.
+     * @param mixed              $xml_node  Import XML node.
+     * @param mixed              $is_update Whether this record updates an existing post.
      */
     public function sync_translations( $post_id, $xml_node, $is_update ) {
+        $post_id = oli_import_sync_trp_normalize_post_id( $post_id );
+        if ( $post_id <= 0 ) {
+            return;
+        }
+
         $this->log( '=== SYNC START for post #' . $post_id . ' ===' );
         
         try {
@@ -939,11 +976,11 @@ class Oli_Import_Sync_For_TranslatePress {
     /**
      * Record a post ID from pmxi_saved_post (real post, never a WPAI import ID).
      *
-     * @param int $post_id Post ID.
+     * @param int|string|WP_Post $post_id Post ID or post object.
      * @return void
      */
     public function track_imported_post( $post_id ) {
-        $post_id = absint( $post_id );
+        $post_id = oli_import_sync_trp_normalize_post_id( $post_id );
         if ( $post_id > 0 ) {
             $this->imported_post_ids[ $post_id ] = $post_id;
         }
@@ -968,11 +1005,16 @@ class Oli_Import_Sync_For_TranslatePress {
     /**
      * Flatten post_content and post_excerpt for one imported post.
      *
-     * @param int $post_id Post ID collected from pmxi_saved_post.
+     * @param int|string|WP_Post $post_id Post ID collected from pmxi_saved_post.
      * @return void
      */
     public function normalize_imported_post_content( $post_id ) {
         global $wpdb;
+
+        $post_id = oli_import_sync_trp_normalize_post_id( $post_id );
+        if ( $post_id <= 0 ) {
+            return;
+        }
         
         $post = get_post( $post_id );
         if ( ! $post ) {
