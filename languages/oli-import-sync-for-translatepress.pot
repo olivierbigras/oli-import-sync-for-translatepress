@@ -1,0 +1,342 @@
+# Copyright (C) 2026 Olivier Bigras
+# This file is distributed under the GPL v2 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Oli Import Sync for TranslatePress 3.17.3\n"
+"Report-Msgid-Bugs-To: https://github.com/olivierbigras/oli-import-sync-for-translatepress\n"
+"Last-Translator: Olivier Bigras\n"
+"Language-Team: Olivier Bigras\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-10-23T01:44:48+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: oli-import-sync-for-translatepress\n"
+
+#. Plugin Name of the plugin
+#: wpai-translatepress-sync.php
+#: wpai-translatepress-sync.php:1488
+#: wpai-translatepress-sync.php:1494
+#: wpai-translatepress-sync.php:1504
+#: wpai-translatepress-sync.php:1513
+#: wpai-translatepress-sync.php:1614
+msgid "Oli Import Sync for TranslatePress"
+msgstr ""
+
+#. Plugin URI of the plugin
+#: wpai-translatepress-sync.php
+msgid "https://github.com/olivierbigras/oli-import-sync-for-translatepress"
+msgstr ""
+
+#. Description of the plugin
+#: wpai-translatepress-sync.php
+msgid "Sync translations from WP All Import into TranslatePress via the official Custom API. Map _trp_title_[lang] and _trp_content_[lang] custom fields in your import. Not affiliated with TranslatePress."
+msgstr ""
+
+#. Author of the plugin
+#: wpai-translatepress-sync.php
+msgid "Olivier Bigras"
+msgstr ""
+
+#. Author URI of the plugin
+#: wpai-translatepress-sync.php
+msgid "https://olivierbigras.com"
+msgstr ""
+
+#: wpai-translatepress-sync.php:480
+msgid "Settings"
+msgstr ""
+
+#: wpai-translatepress-sync.php:481
+#: wpai-translatepress-sync.php:497
+msgid "Donate"
+msgstr ""
+
+#. translators: %s: donate URL
+#: wpai-translatepress-sync.php:522
+#, php-format
+msgid "Enjoying Oli Import Sync for TranslatePress? <a href=\"%s\" target=\"_blank\" rel=\"noopener noreferrer\">Buy me a coffee</a> — your support keeps the plugin free and maintained."
+msgstr ""
+
+#: wpai-translatepress-sync.php:582
+msgid "Clear the entire log?"
+msgstr ""
+
+#: wpai-translatepress-sync.php:583
+msgid "Copied!"
+msgstr ""
+
+#: wpai-translatepress-sync.php:1489
+msgid "TranslatePress Custom API is required."
+msgstr ""
+
+#: wpai-translatepress-sync.php:1490
+msgid "Manage Plugins"
+msgstr ""
+
+#: wpai-translatepress-sync.php:1495
+msgid "is active."
+msgstr ""
+
+#: wpai-translatepress-sync.php:1496
+msgid "View field reference & logs →"
+msgstr ""
+
+#: wpai-translatepress-sync.php:1505
+#: wpai-translatepress-sync.php:1514
+msgid "Oli Import Sync"
+msgstr ""
+
+#: wpai-translatepress-sync.php:1598
+msgid "Sorry, you are not allowed to access this page."
+msgstr ""
+
+#: wpai-translatepress-sync.php:1604
+msgid "Dashboard"
+msgstr ""
+
+#: wpai-translatepress-sync.php:1605
+msgid "Field Reference"
+msgstr ""
+
+#: wpai-translatepress-sync.php:1606
+msgid "Logs"
+msgstr ""
+
+#. translators: %s: donate URL
+#: wpai-translatepress-sync.php:1642
+#, php-format
+msgid "If this plugin helps you, please consider a <a href=\"%s\" target=\"_blank\" rel=\"noopener noreferrer\">donation</a>. Thank you!"
+msgstr ""
+
+#: wpai-translatepress-sync.php:1702
+msgid "copy"
+msgstr ""
+
+#: wpai-translatepress-sync.php:1717
+#: wpai-translatepress-sync.php:1721
+#: wpai-translatepress-sync.php:1725
+#: wpai-translatepress-sync.php:1729
+msgid "Active"
+msgstr ""
+
+#: wpai-translatepress-sync.php:1718
+#: wpai-translatepress-sync.php:1726
+msgid "Not found"
+msgstr ""
+
+#: wpai-translatepress-sync.php:1722
+msgid "Required"
+msgstr ""
+
+#: wpai-translatepress-sync.php:1722
+msgid "install it"
+msgstr ""
+
+#: wpai-translatepress-sync.php:1730
+msgid "Not required"
+msgstr ""
+
+#: wpai-translatepress-sync.php:1734
+msgid "None detected"
+msgstr ""
+
+#: wpai-translatepress-sync.php:1737
+#: wpai-translatepress-sync.php:1742
+msgid "Enabled"
+msgstr ""
+
+#: wpai-translatepress-sync.php:1738
+#: wpai-translatepress-sync.php:1743
+msgid "Disabled"
+msgstr ""
+
+#: wpai-translatepress-sync.php:1739
+#: wpai-translatepress-sync.php:1747
+msgid "manage"
+msgstr ""
+
+#: wpai-translatepress-sync.php:1745
+msgid "(SEO Pack required)"
+msgstr ""
+
+#: wpai-translatepress-sync.php:1750
+msgid "System Status"
+msgstr ""
+
+#: wpai-translatepress-sync.php:1753
+msgid "TranslatePress"
+msgstr ""
+
+#: wpai-translatepress-sync.php:1754
+msgid "TranslatePress Custom API"
+msgstr ""
+
+#: wpai-translatepress-sync.php:1755
+msgid "WP All Import"
+msgstr ""
+
+#: wpai-translatepress-sync.php:1756
+msgid "WooCommerce"
+msgstr ""
+
+#: wpai-translatepress-sync.php:1757
+msgid "Translation Languages"
+msgstr ""
+
+#: wpai-translatepress-sync.php:1758
+msgid "Logging"
+msgstr ""
+
+#: wpai-translatepress-sync.php:1759
+msgid "Auto-derive Post Slug from Title"
+msgstr ""
+
+#: wpai-translatepress-sync.php:1764
+msgid "How It Works"
+msgstr ""
+
+#: wpai-translatepress-sync.php:1766
+msgid "Map your <strong>default language</strong> fields normally in WP All Import (Title, Content, Excerpt)."
+msgstr ""
+
+#. translators: %s: URL of the Field Reference tab.
+#: wpai-translatepress-sync.php:1771
+#, php-format
+msgid "Add <strong>custom fields</strong> for each translation (see <a href=\"%s\">Field Reference</a>)."
+msgstr ""
+
+#: wpai-translatepress-sync.php:1780
+msgid "Run the import — translations are <strong>automatically synced</strong> to TranslatePress."
+msgstr ""
+
+#: wpai-translatepress-sync.php:1782
+msgid "Automatic Features"
+msgstr ""
+
+#: wpai-translatepress-sync.php:1784
+msgid "Multi-paragraph content is flattened so TranslatePress detects <strong>one string per description</strong>."
+msgstr ""
+
+#: wpai-translatepress-sync.php:1785
+msgid "Inline formatting (<code>&lt;strong&gt;</code>, <code>&lt;em&gt;</code>, <code>&lt;a&gt;</code>) is preserved."
+msgstr ""
+
+#: wpai-translatepress-sync.php:1786
+msgid "All translations are saved as <strong>Human Reviewed</strong> (status 2)."
+msgstr ""
+
+#: wpai-translatepress-sync.php:1787
+msgid "Smart quotes from <code>wptexturize()</code> are handled automatically."
+msgstr ""
+
+#: wpai-translatepress-sync.php:1799
+msgid "Post / Product Fields"
+msgstr ""
+
+#: wpai-translatepress-sync.php:1801
+#: wpai-translatepress-sync.php:1829
+#: wpai-translatepress-sync.php:1843
+msgid "Purpose"
+msgstr ""
+
+#: wpai-translatepress-sync.php:1805
+msgid "Translated Title"
+msgstr ""
+
+#: wpai-translatepress-sync.php:1806
+msgid "Translated Content"
+msgstr ""
+
+#: wpai-translatepress-sync.php:1807
+msgid "Translated Excerpt"
+msgstr ""
+
+#: wpai-translatepress-sync.php:1808
+msgid "Translated Slug (optional, SEO Pack required - leave empty to auto-derive from translated title)"
+msgstr ""
+
+#: wpai-translatepress-sync.php:1827
+msgid "WooCommerce Variations"
+msgstr ""
+
+#: wpai-translatepress-sync.php:1830
+msgid "Variation Description"
+msgstr ""
+
+#: wpai-translatepress-sync.php:1841
+msgid "WooCommerce Categories"
+msgstr ""
+
+#: wpai-translatepress-sync.php:1847
+msgid "Category Names (pipe-separated)"
+msgstr ""
+
+#: wpai-translatepress-sync.php:1848
+msgid "Category Slugs (SEO Pack required)"
+msgstr ""
+
+#: wpai-translatepress-sync.php:1868
+msgid "WooCommerce Attributes"
+msgstr ""
+
+#: wpai-translatepress-sync.php:1868
+msgid "detected"
+msgstr ""
+
+#: wpai-translatepress-sync.php:1869
+msgid "Values should be pipe-separated, e.g. <code>\"Rouge|Bleu|Vert\"</code>"
+msgstr ""
+
+#: wpai-translatepress-sync.php:1873
+msgid "Attribute"
+msgstr ""
+
+#: wpai-translatepress-sync.php:1907
+msgid "Log cleared."
+msgstr ""
+
+#: wpai-translatepress-sync.php:1911
+msgid "Settings saved."
+msgstr ""
+
+#: wpai-translatepress-sync.php:1918
+msgid "Enable Logging"
+msgstr ""
+
+#: wpai-translatepress-sync.php:1922
+msgid "Write detailed import logs"
+msgstr ""
+
+#: wpai-translatepress-sync.php:1924
+msgid "Enable before running an import. Disable when not debugging to save disk space."
+msgstr ""
+
+#: wpai-translatepress-sync.php:1929
+msgid "Auto-derive post slug from translated title"
+msgstr ""
+
+#: wpai-translatepress-sync.php:1933
+msgid "When <code>_trp_slug_[lang]</code> is empty, build the translated post/product slug from <code>_trp_title_[lang]</code>"
+msgstr ""
+
+#: wpai-translatepress-sync.php:1935
+msgid "Requires TranslatePress SEO Pack. Existing translations for the same default slug are replaced on each import."
+msgstr ""
+
+#: wpai-translatepress-sync.php:1939
+msgid "Save Settings"
+msgstr ""
+
+#: wpai-translatepress-sync.php:1942
+msgid "Import Log"
+msgstr ""
+
+#: wpai-translatepress-sync.php:1946
+msgid "Clear Log"
+msgstr ""
+
+#: wpai-translatepress-sync.php:1950
+msgid "No log entries yet. Enable logging above and run an import."
+msgstr ""

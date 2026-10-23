@@ -5,7 +5,7 @@ Import multilingual content into TranslatePress when using WP All Import. Third-
 **Author:** Olivier Bigras  
 **Website:** [olivierbigras.com](https://olivierbigras.com)  
 **Email:** oli@olivierbigras.com  
-**Version:** 3.16.0  
+**Version:** 3.17.3  
 **License:** GPL v2 or later
 
 ---
@@ -21,7 +21,7 @@ Import multilingual content into TranslatePress when using WP All Import. Third-
 
 ## Installation
 
-1. Download or copy the `wpai-translatepress-sync` folder
+1. Download or copy the `oli-import-sync-for-translatepress` folder
 2. Upload to `wp-content/plugins/` 
 3. Activate the plugin in WordPress → Plugins
 4. Ensure TranslatePress and TranslatePress Custom API are also active
@@ -266,7 +266,7 @@ Use these functions in your theme or other plugins:
 ### Add a single translation
 
 ```php
-wpai_trp_add_translation( 'Hello World', 'Bonjour le monde', 'fr_CA' );
+oli_import_sync_trp_add_translation( 'Hello World', 'Bonjour le monde', 'fr_CA' );
 ```
 
 ### Bulk add translations
@@ -278,7 +278,7 @@ $translations = array(
     'Welcome' => 'Bienvenue',
 );
 
-wpai_trp_bulk_add_translations( $translations, 'fr_CA' );
+oli_import_sync_trp_bulk_add_translations( $translations, 'fr_CA' );
 ```
 
 ---
@@ -357,6 +357,32 @@ define( 'WP_DEBUG_LOG', true );
 ---
 
 ## Changelog
+
+### 3.17.3
+- Normalize only posts tracked on `pmxi_saved_post` (`pmxi_after_xml_import`); never treat the WPAI import ID as a post
+- Log file under `uploads/oli-import-sync/` (random name, `index.php` + `.htaccess` deny)
+- Remap 3.17.0–3.17.1 `active_plugins` paths to `wpai-translatepress-sync.php`
+
+### 3.17.2
+- Restored main file `wpai-translatepress-sync.php` (3.16.2 name) so ZIP updates stay active
+- SQL identifiers via `%i` (WordPress 6.2+) or `$wpdb->prefix` tables only
+- Added `languages/oli-import-sync-for-translatepress.pot`
+
+### 3.17.1
+- Translators comment on the Field Reference sprintf
+- Removed unprefixed `wpai_trp_*` helpers (use `oli_import_sync_trp_*`)
+- Logs only when plugin logging is on or `WP_DEBUG_LOG` is active
+- Shim reads raw `active_plugins` and rewrites only this plugin's path
+- `.distignore` / `export-ignore` for the distribution ZIP
+
+### 3.17.0
+- Main file renamed to `oli-import-sync-for-translatepress.php` (slug match). `wpai-translatepress-sync.php` is a header-less shim so existing activations are not dropped
+- Dashboard status output escaped; admin CSS/JS enqueued from files
+- Options migrated `wpai_trp_*` → `oli_import_sync_trp_*`
+- Class `Oli_Import_Sync_For_TranslatePress`; helpers `oli_import_sync_trp_*`
+
+### 3.16.2
+- Settings and Donate links on the Plugins screen, optional support notice, footer donation link (PayPal)
 
 ### 3.16.0
 - **NEW:** Mirror WordPress's `-2`, `-3` slug auto-disambiguator from the EN slug onto auto-derived translated slugs
@@ -438,3 +464,4 @@ define( 'WP_DEBUG_LOG', true );
 For issues or questions:
 - **Email:** oli@olivierbigras.com
 - **Website:** [olivierbigras.com](https://olivierbigras.com)
+- **GitHub:** [github.com/olivierbigras/oli-import-sync-for-translatepress](https://github.com/olivierbigras/oli-import-sync-for-translatepress)

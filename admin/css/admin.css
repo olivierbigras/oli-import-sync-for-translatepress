@@ -1,0 +1,143 @@
+.oli-import-sync-trp-heading-meta {
+	font-weight: normal;
+	color: #999;
+}
+
+.oli-import-sync-trp-tabs-body {
+	margin-top: 20px;
+}
+
+.oli-import-sync-trp-footer {
+	margin-top: 20px;
+}
+
+.oli-import-sync-trp-card {
+	max-width: 800px;
+}
+
+.oli-import-sync-trp-card-spaced {
+	margin-top: 20px;
+}
+
+.oli-import-sync-trp-status {
+	max-width: 600px;
+}
+
+.oli-import-sync-trp-ok {
+	color: #00a32a;
+	font-weight: bold;
+}
+
+.oli-import-sync-trp-no {
+	color: #d63638;
+	font-weight: bold;
+}
+
+.oli-import-sync-trp-warn {
+	color: #d63638;
+}
+
+.oli-import-sync-trp-field {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+}
+
+.oli-import-sync-trp-field code {
+	font-size: 12px;
+	background: #f0f0f1;
+	padding: 3px 6px;
+	border-radius: 3px;
+}
+
+.oli-import-sync-trp-field-code-sm {
+	font-size: 11px;
+}
+
+.oli-import-sync-trp-copy {
+	cursor: pointer;
+	font-size: 11px;
+	color: #2271b1;
+	border: none;
+	background: none;
+	padding: 2px 6px;
+}
+
+.oli-import-sync-trp-copy:hover {
+	text-decoration: underline;
+}
+
+.oli-import-sync-trp-copy.is-copied {
+	color: #00a32a;
+}
+
+.oli-import-sync-trp-section {
+	margin-bottom: 24px;
+	max-width: 900px;
+}
+
+.oli-import-sync-trp-section h3 {
+	margin-bottom: 8px;
+}
+
+.oli-import-sync-trp-section-meta {
+	font-weight: normal;
+	color: #666;
+}
+
+.oli-import-sync-trp-help {
+	margin-bottom: 8px;
+	font-size: 13px;
+	color: #555;
+}
+
+.oli-import-sync-trp-attr-wrap {
+	max-height: 400px;
+	overflow-y: auto;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
+}
+
+.oli-import-sync-trp-attr-table {
+	margin: 0;
+}
+
+.oli-import-sync-trp-attr-head {
+	position: sticky;
+	top: 0;
+	z-index: 1;
+	background: #f6f7f7;
+}
+
+.oli-import-sync-trp-attr-slug {
+	color: #666;
+}
+
+.oli-import-sync-trp-list {
+	list-style: disc;
+	margin-left: 20px;
+}
+
+.oli-import-sync-trp-log-meta {
+	font-weight: normal;
+	color: #666;
+}
+
+.oli-import-sync-trp-log-form {
+	margin-bottom: 10px;
+}
+
+.oli-import-sync-trp-log {
+	width: 100%;
+	height: 500px;
+	font-family: monospace, monospace;
+	font-size: 12px;
+	background: #1e1e1e;
+	color: #d4d4d4;
+	padding: 12px;
+	border-radius: 4px;
+}
+
+.oli-import-sync-trp-muted {
+	color: #666;
+}
