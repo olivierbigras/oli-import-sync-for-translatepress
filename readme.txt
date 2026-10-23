@@ -5,7 +5,7 @@ Tags: translatepress, multilingual, translation, woocommerce, wp-all-import
 Requires at least: 5.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 3.17.1
+Stable tag: 3.17.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -120,6 +120,11 @@ No. This is an independent third-party integration. "TranslatePress" is referenc
 3. Translations synced in TranslatePress
 
 == Changelog ==
+
+= 3.17.2 =
+* FIX: Restore the 3.16.2 main file (`wpai-translatepress-sync.php`) so an in-place update does not deactivate the plugin
+* SQL identifiers use `%i` (WordPress 6.2+) or `$wpdb->prefix` tables only
+* Ship `languages/oli-import-sync-for-translatepress.pot`
 
 = 3.17.1 =
 * Translators comment on the Field Reference sprintf; remaining `sprintf( __( … ) )` calls already documented
@@ -238,6 +243,9 @@ No. This is an independent third-party integration. "TranslatePress" is referenc
 * Initial release
 
 == Upgrade Notice ==
+
+= 3.17.2 =
+Keeps the plugin active when updating from 3.16.2 (same main file name). Options are unchanged.
 
 = 3.17.1 =
 Plugin Check / logging / shim follow-up. Use `oli_import_sync_trp_*` helpers. Existing activations still load through the header-less shim.

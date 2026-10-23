@@ -5,7 +5,7 @@ Import multilingual content into TranslatePress when using WP All Import. Third-
 **Author:** Olivier Bigras  
 **Website:** [olivierbigras.com](https://olivierbigras.com)  
 **Email:** oli@olivierbigras.com  
-**Version:** 3.17.1  
+**Version:** 3.17.2  
 **License:** GPL v2 or later
 
 ---
@@ -357,6 +357,11 @@ define( 'WP_DEBUG_LOG', true );
 ---
 
 ## Changelog
+
+### 3.17.2
+- Restored main file `wpai-translatepress-sync.php` (3.16.2 name) so ZIP updates stay active
+- SQL identifiers via `%i` (WordPress 6.2+) or `$wpdb->prefix` tables only
+- Added `languages/oli-import-sync-for-translatepress.pot`
 
 ### 3.17.1
 - Translators comment on the Field Reference sprintf

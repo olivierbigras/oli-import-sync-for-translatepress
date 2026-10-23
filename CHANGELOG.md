@@ -2,6 +2,15 @@
 
 All notable changes to Oli Import Sync for TranslatePress are documented here.
 
+## 3.17.2 – 2026-10-23
+
+In-place update fix and SQL identifier hardening.
+
+- Restored the 3.16.2 main file name (`wpai-translatepress-sync.php`) with the plugin header so WordPress keeps the plugin active after a ZIP update from 3.16.2. `oli-import-sync-for-translatepress.php` is a header-less loader only.
+- Dictionary and slug queries use `%i` identifiers on WordPress 6.2+; older WordPress interpolates only `$wpdb->prefix` tables that pass a character-class check. No user input in table names.
+- Generated `languages/oli-import-sync-for-translatepress.pot`.
+- Request data (`$_GET` / `$_POST`) is unslashed and sanitized; clear-log and donate AJAX still require `manage_options` and a nonce.
+
 ## 3.17.1 – 2026-10-21
 
 WordPress.org / Plugin Check follow-up on 3.17.0.
