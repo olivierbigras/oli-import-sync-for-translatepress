@@ -5,7 +5,7 @@ Import multilingual content into TranslatePress when using WP All Import. Third-
 **Author:** Olivier Bigras  
 **Website:** [olivierbigras.com](https://olivierbigras.com)  
 **Email:** oli@olivierbigras.com  
-**Version:** 3.17.2  
+**Version:** 3.17.3  
 **License:** GPL v2 or later
 
 ---
@@ -357,6 +357,11 @@ define( 'WP_DEBUG_LOG', true );
 ---
 
 ## Changelog
+
+### 3.17.3
+- Normalize only posts tracked on `pmxi_saved_post` (`pmxi_after_xml_import`); never treat the WPAI import ID as a post
+- Log file under `uploads/oli-import-sync/` (random name, `index.php` + `.htaccess` deny)
+- Remap 3.17.0–3.17.1 `active_plugins` paths to `wpai-translatepress-sync.php`
 
 ### 3.17.2
 - Restored main file `wpai-translatepress-sync.php` (3.16.2 name) so ZIP updates stay active

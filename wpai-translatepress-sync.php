@@ -3,7 +3,7 @@
  * Plugin Name: Oli Import Sync for TranslatePress
  * Plugin URI: https://github.com/olivierbigras/oli-import-sync-for-translatepress
  * Description: Sync translations from WP All Import into TranslatePress via the official Custom API. Map _trp_title_[lang] and _trp_content_[lang] custom fields in your import. Not affiliated with TranslatePress.
- * Version: 3.17.2
+ * Version: 3.17.3
  * Author: Olivier Bigras
  * Author URI: https://olivierbigras.com
  * License: GPL v2 or later
@@ -25,7 +25,7 @@ if ( defined( 'OLI_IMPORT_SYNC_TRP_LOADED' ) ) {
 }
 define( 'OLI_IMPORT_SYNC_TRP_LOADED', true );
 
-define( 'OLI_IMPORT_SYNC_TRP_VERSION', '3.17.2' );
+define( 'OLI_IMPORT_SYNC_TRP_VERSION', '3.17.3' );
 define( 'OLI_IMPORT_SYNC_TRP_FILE', __FILE__ );
 define( 'OLI_IMPORT_SYNC_TRP_DIR', plugin_dir_path( __FILE__ ) );
 define( 'OLI_IMPORT_SYNC_TRP_DONATE_URL', 'https://www.paypal.com/donate/?hosted_button_id=29SAPKFAHMTNW' );
@@ -75,6 +75,240 @@ function oli_import_sync_trp_lang_token( $lang ) {
 }
 
 /**
+ * Read an option from the raw store, bypassing option_{$name} filters.
+ *
+ * @param string $option Option name.
+ * @return mixed|null Unserialized value, or null if not found.
+ */
+function oli_import_sync_trp_get_raw_option( $option ) {
+	if ( function_exists( 'wp_load_alloptions' ) ) {
+		$alloptions = wp_load_alloptions();
+		if ( is_array( $alloptions ) && array_key_exists( $option, $alloptions ) ) {
+			return maybe_unserialize( $alloptions[ $option ] );
+		}
+	}
+
+	global $wpdb;
+	if ( isset( $wpdb ) && is_object( $wpdb ) && ! empty( $wpdb->options ) ) {
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- raw value, skip option_* filters (e.g. wp --skip-plugins).
+		$raw = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT option_value FROM {$wpdb->options} WHERE option_name = %s LIMIT 1",
+				$option
+			)
+		);
+		if ( is_string( $raw ) ) {
+			return maybe_unserialize( $raw );
+		}
+	}
+
+	return null;
+}
+
+/**
+ * Read a network option from sitemeta without site_option_* filters.
+ *
+ * @param string $option Option name.
+ * @return mixed|null Unserialized value, or null if not found.
+ */
+function oli_import_sync_trp_get_raw_site_option( $option ) {
+	global $wpdb;
+	if ( ! isset( $wpdb ) || ! is_object( $wpdb ) || empty( $wpdb->sitemeta ) ) {
+		return null;
+	}
+
+	$network_id = function_exists( 'get_current_network_id' ) ? get_current_network_id() : ( isset( $wpdb->siteid ) ? (int) $wpdb->siteid : 1 );
+
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- raw network value, skip site_option_* filters.
+	$raw = $wpdb->get_var(
+		$wpdb->prepare(
+			"SELECT meta_value FROM {$wpdb->sitemeta} WHERE meta_key = %s AND site_id = %d LIMIT 1",
+			$option,
+			$network_id
+		)
+	);
+
+	if ( is_string( $raw ) ) {
+		return maybe_unserialize( $raw );
+	}
+
+	return null;
+}
+
+/**
+ * Canonical listed plugin basename (3.16.2 / 3.17.2+ main file).
+ *
+ * @return string
+ */
+function oli_import_sync_trp_canonical_basename() {
+	return basename( dirname( OLI_IMPORT_SYNC_TRP_FILE ) ) . '/wpai-translatepress-sync.php';
+}
+
+/**
+ * 3.17.0–3.17.1 listed basename (slug-matching file, no header in 3.17.2+).
+ *
+ * @return string
+ */
+function oli_import_sync_trp_slug_file_basename() {
+	return basename( dirname( OLI_IMPORT_SYNC_TRP_FILE ) ) . '/oli-import-sync-for-translatepress.php';
+}
+
+/**
+ * Replace the 3.17.0–3.17.1 plugin path with the 3.16.2 main file in an active list.
+ *
+ * @param array $plugins Plugin basenames (list or sitewide map).
+ * @param bool  $sitewide Whether this is active_sitewide_plugins (path => time).
+ * @return array{0: array, 1: bool} Updated list and whether it changed.
+ */
+function oli_import_sync_trp_replace_slug_basename( $plugins, $sitewide ) {
+	$old = oli_import_sync_trp_slug_file_basename();
+	$new = oli_import_sync_trp_canonical_basename();
+	if ( $old === $new || ! is_array( $plugins ) ) {
+		return array( $plugins, false );
+	}
+
+	$changed = false;
+
+	if ( $sitewide ) {
+		if ( isset( $plugins[ $old ] ) ) {
+			if ( ! isset( $plugins[ $new ] ) ) {
+				$plugins[ $new ] = $plugins[ $old ];
+			}
+			unset( $plugins[ $old ] );
+			$changed = true;
+		}
+		return array( $plugins, $changed );
+	}
+
+	$out = array();
+	$have_new = in_array( $new, $plugins, true );
+	foreach ( $plugins as $plugin ) {
+		if ( ! is_string( $plugin ) ) {
+			continue;
+		}
+		if ( $plugin === $old ) {
+			if ( ! $have_new && ! in_array( $new, $out, true ) ) {
+				$out[] = $new;
+				$have_new = true;
+			}
+			$changed = true;
+			continue;
+		}
+		if ( ! in_array( $plugin, $out, true ) ) {
+			$out[] = $plugin;
+		}
+	}
+
+	return array( $out, $changed );
+}
+
+/**
+ * Remap 3.17.0–3.17.1 activations to wpai-translatepress-sync.php before header validation.
+ *
+ * Reads raw options (maybe_unserialize) so filtered lists are never persisted.
+ * Idempotent: no write when the listed path is already the canonical file.
+ *
+ * @return void
+ */
+function oli_import_sync_trp_remap_active_plugin_file() {
+	$active = oli_import_sync_trp_get_raw_option( 'active_plugins' );
+	if ( is_array( $active ) ) {
+		list( $active, $changed ) = oli_import_sync_trp_replace_slug_basename( $active, false );
+		if ( $changed && function_exists( 'update_option' ) ) {
+			update_option( 'active_plugins', $active );
+		}
+	}
+
+	if ( function_exists( 'is_multisite' ) && is_multisite() ) {
+		$sitewide = oli_import_sync_trp_get_raw_site_option( 'active_sitewide_plugins' );
+		if ( is_array( $sitewide ) ) {
+			list( $sitewide, $changed ) = oli_import_sync_trp_replace_slug_basename( $sitewide, true );
+			if ( $changed && function_exists( 'update_site_option' ) ) {
+				update_site_option( 'active_sitewide_plugins', $sitewide );
+			}
+		}
+	}
+}
+
+oli_import_sync_trp_remap_active_plugin_file();
+
+/**
+ * Uploads subdirectory for the import log (not inside the plugin folder).
+ *
+ * @return string Absolute path without trailing slash, or empty on failure.
+ */
+function oli_import_sync_trp_log_dir() {
+	if ( ! function_exists( 'wp_upload_dir' ) ) {
+		return '';
+	}
+	$uploads = wp_upload_dir( null, false );
+	if ( ! is_array( $uploads ) || ! empty( $uploads['error'] ) || empty( $uploads['basedir'] ) ) {
+		return '';
+	}
+	return trailingslashit( $uploads['basedir'] ) . 'oli-import-sync';
+}
+
+/**
+ * Create the log directory with index.php and .htaccess deny.
+ *
+ * @return string Directory path or empty string.
+ */
+function oli_import_sync_trp_ensure_log_dir() {
+	$dir = oli_import_sync_trp_log_dir();
+	if ( '' === $dir ) {
+		return '';
+	}
+	if ( ! wp_mkdir_p( $dir ) ) {
+		return '';
+	}
+
+	$index = $dir . '/index.php';
+	if ( ! file_exists( $index ) ) {
+		file_put_contents( $index, "<?php\n// Silence is golden.\n" );
+	}
+
+	$htaccess = $dir . '/.htaccess';
+	if ( ! file_exists( $htaccess ) ) {
+		file_put_contents(
+			$htaccess,
+			"<IfModule mod_authz_core.c>\nRequire all denied\n</IfModule>\n<IfModule !mod_authz_core.c>\nDeny from all\n</IfModule>\n"
+		);
+	}
+
+	return $dir;
+}
+
+/**
+ * Absolute path to the random log file under uploads. Migrates plugin-dir sync-log.txt.
+ *
+ * @return string
+ */
+function oli_import_sync_trp_resolve_log_file() {
+	$dir = oli_import_sync_trp_ensure_log_dir();
+	if ( '' === $dir ) {
+		return '';
+	}
+
+	$basename = get_option( 'oli_import_sync_trp_log_basename', '' );
+	if ( ! is_string( $basename ) || ! preg_match( '/^sync-[A-Za-z0-9]{12}\.log$/', $basename ) ) {
+		$basename = 'sync-' . wp_generate_password( 12, false, false ) . '.log';
+		update_option( 'oli_import_sync_trp_log_basename', $basename, false );
+	}
+
+	$path   = $dir . '/' . $basename;
+	$legacy = OLI_IMPORT_SYNC_TRP_DIR . 'sync-log.txt';
+	if ( file_exists( $legacy ) ) {
+		$old = file_get_contents( $legacy );
+		if ( is_string( $old ) && '' !== $old ) {
+			file_put_contents( $path, $old, FILE_APPEND | LOCK_EX );
+		}
+		wp_delete_file( $legacy );
+	}
+
+	return $path;
+}
+
+/**
  * Copy legacy wpai_trp_* options to oli_import_sync_trp_* then delete the old keys.
  *
  * @return void
@@ -109,7 +343,7 @@ function oli_import_sync_trp_migrate_legacy_options() {
 
 /**
  * =============================================================================
- * WP ALL IMPORT + TRANSLATEPRESS SYNC PLUGIN (v3.17.2 - Using Official API)
+ * WP ALL IMPORT + TRANSLATEPRESS SYNC PLUGIN (v3.17.3 - Using Official API)
  * =============================================================================
  * 
  * REQUIRES: TranslatePress Custom API plugin
@@ -178,15 +412,23 @@ class Oli_Import_Sync_For_TranslatePress {
     private $slug_prefix = '_trp_slug_';
 
     /**
-     * Path to the plugin's own log file
+     * Path to the plugin's own log file (uploads, random name).
      */
     private $log_file;
+
+    /**
+     * Post IDs seen on pmxi_saved_post during the current import.
+     * Never store a WPAI import ID here.
+     *
+     * @var int[]
+     */
+    private $imported_post_ids = array();
 
     /**
      * Constructor
      */
     public function __construct() {
-        $this->log_file = OLI_IMPORT_SYNC_TRP_DIR . 'sync-log.txt';
+        $this->log_file = oli_import_sync_trp_resolve_log_file();
 
         oli_import_sync_trp_migrate_legacy_options();
 
@@ -194,10 +436,11 @@ class Oli_Import_Sync_For_TranslatePress {
         add_filter( 'pmxi_article_data', array( $this, 'convert_linebreaks_before_save' ), 10, 4 );
 
         // Hook into WP All Import after post is saved
+        add_action( 'pmxi_saved_post', array( $this, 'track_imported_post' ), 9, 1 );
         add_action( 'pmxi_saved_post', array( $this, 'sync_translations' ), 10, 3 );
 
-        // Safety net: re-flatten after entire import record (catches WooCommerce reverts)
-        add_action( 'pmxi_after_post_import', array( $this, 'normalize_content_after_import' ), 10, 1 );
+        // Safety net at end of import only. pmxi_after_post_import passes the import ID, not a post ID.
+        add_action( 'pmxi_after_xml_import', array( $this, 'normalize_tracked_imported_posts' ), 10, 2 );
         
         // Admin notice for configuration help
         add_action( 'admin_notices', array( $this, 'admin_notice' ) );
@@ -693,14 +936,41 @@ class Oli_Import_Sync_For_TranslatePress {
     }
 
     /**
-     * Safety net: normalize post_content and post_excerpt AFTER entire import record is done
-     * This runs on pmxi_after_post_import, which fires after pmxi_saved_post and all
-     * WooCommerce/ACF processing. If content still has paragraph breaks at this point,
-     * we force-normalize it via direct DB update.
-     * 
-     * @param int $post_id Post ID
+     * Record a post ID from pmxi_saved_post (real post, never a WPAI import ID).
+     *
+     * @param int $post_id Post ID.
+     * @return void
      */
-    public function normalize_content_after_import( $post_id ) {
+    public function track_imported_post( $post_id ) {
+        $post_id = absint( $post_id );
+        if ( $post_id > 0 ) {
+            $this->imported_post_ids[ $post_id ] = $post_id;
+        }
+    }
+
+    /**
+     * Normalize only posts collected during this import.
+     *
+     * @param int   $import_id WPAI import record ID. Do not treat as a post ID.
+     * @param mixed $import    Import object when provided.
+     * @return void
+     */
+    public function normalize_tracked_imported_posts( $import_id, $import = null ) {
+        unset( $import_id, $import );
+
+        foreach ( $this->imported_post_ids as $post_id ) {
+            $this->normalize_imported_post_content( $post_id );
+        }
+        $this->imported_post_ids = array();
+    }
+
+    /**
+     * Flatten post_content and post_excerpt for one imported post.
+     *
+     * @param int $post_id Post ID collected from pmxi_saved_post.
+     * @return void
+     */
+    public function normalize_imported_post_content( $post_id ) {
         global $wpdb;
         
         $post = get_post( $post_id );
@@ -728,7 +998,7 @@ class Oli_Import_Sync_For_TranslatePress {
                 );
                 if ( $updated !== false ) {
                     clean_post_cache( $post_id );
-                    $this->log( sprintf( 'SAFETY NET: Normalized %s for post #%d "%s" (still had paragraph breaks after import)', $field, $post_id, $post->post_title ) );
+                    $this->log( sprintf( 'SAFETY NET: Normalized %s for imported post #%d "%s" (still had paragraph breaks after import)', $field, $post_id, $post->post_title ) );
                 }
             }
         }

@@ -2,6 +2,14 @@
 
 All notable changes to Oli Import Sync for TranslatePress are documented here.
 
+## 3.17.3 – 2026-10-23
+
+QA follow-up on 3.17.2.
+
+- Collect post IDs on `pmxi_saved_post` and flatten them only on `pmxi_after_xml_import`. The WPAI import ID from `pmxi_after_post_import` is never treated as a post ID.
+- Import log lives in `wp-content/uploads/oli-import-sync/` (`wp_mkdir_p`, random `sync-*.log`, `index.php`, `.htaccess` deny). Legacy `sync-log.txt` in the plugin folder is migrated then deleted. Uninstall removes the uploads log.
+- Header-less loader remaps raw `active_plugins` / `active_sitewide_plugins` from `oli-import-sync-for-translatepress.php` to `wpai-translatepress-sync.php` (maybe_unserialize, idempotent) before WordPress validates plugin headers.
+
 ## 3.17.2 – 2026-10-23
 
 In-place update fix and SQL identifier hardening.
