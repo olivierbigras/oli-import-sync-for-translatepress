@@ -291,7 +291,8 @@ function oli_import_sync_trp_resolve_log_file() {
 
 	$basename = get_option( 'oli_import_sync_trp_log_basename', '' );
 	if ( ! is_string( $basename ) || ! preg_match( '/^sync-[A-Za-z0-9]{12}\.log$/', $basename ) ) {
-		$basename = 'sync-' . wp_generate_password( 12, false, false ) . '.log';
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.rand_random_bytes -- pluggable wp_generate_password() is not loaded yet when plugins bootstrap.
+		$basename = 'sync-' . bin2hex( random_bytes( 6 ) ) . '.log';
 		update_option( 'oli_import_sync_trp_log_basename', $basename, false );
 	}
 
