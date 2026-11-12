@@ -705,22 +705,24 @@ class Oli_Import_Sync_For_TranslatePress {
         }
 
 	if ( oli_import_sync_trp_supports_identifier_placeholder() ) {
-		// phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnsupportedIdentifierPlaceholder -- Version checked above.
+		// phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnsupportedIdentifierPlaceholder, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Version checked above; TranslatePress custom dictionary tables.
 		$wpdb->query( $wpdb->prepare( 'DELETE FROM %i WHERE original = %s', $table_name, $original ) );
 	} else {
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- TranslatePress custom dictionary tables.
 		$wpdb->delete( $table_name, array( 'original' => $original ), array( '%s' ) );
 	}
 
         // Also check for HTML-encoded version and delete it too
         $original_encoded = htmlspecialchars( $original, ENT_QUOTES, 'UTF-8' );
-        if ( $original_encoded !== $original ) {
+	if ( $original_encoded !== $original ) {
 		if ( oli_import_sync_trp_supports_identifier_placeholder() ) {
-			// phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnsupportedIdentifierPlaceholder -- Version checked above.
+			// phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnsupportedIdentifierPlaceholder, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Version checked above; TranslatePress custom dictionary tables.
 			$wpdb->query( $wpdb->prepare( 'DELETE FROM %i WHERE original = %s', $table_name, $original_encoded ) );
 		} else {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- TranslatePress custom dictionary tables.
 			$wpdb->delete( $table_name, array( 'original' => $original_encoded ), array( '%s' ) );
 		}
-        }
+	}
         
         // Now insert the new translation using the API
         if ( function_exists( 'trpc_insert_translation' ) ) {
@@ -741,6 +743,7 @@ class Oli_Import_Sync_For_TranslatePress {
                 $translated_texturized = wptexturize( $translated );
                 
                 // Update any existing auto-detected entries that match the texturized version
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- TranslatePress custom dictionary tables.
                 $wpdb->update(
                     $table_name,
                     array(
@@ -762,6 +765,7 @@ class Oli_Import_Sync_For_TranslatePress {
                 if ( $original_tex_encoded !== $original_texturized ) {
                     $translated_tex_encoded = htmlspecialchars( $translated_texturized, ENT_QUOTES, 'UTF-8' );
                     
+                    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- TranslatePress custom dictionary tables.
                     $wpdb->update(
                         $table_name,
                         array(
@@ -924,6 +928,7 @@ class Oli_Import_Sync_For_TranslatePress {
                     // Persist flattened original to DB (bypass WooCommerce hooks)
                     if ( $original_flat !== $original_value && in_array( $post_field, array( 'post_content', 'post_excerpt' ), true ) ) {
                         global $wpdb;
+                        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Must bypass WooCommerce hooks; cache cleared below.
                         $updated = $wpdb->update(
                             $wpdb->posts,
                             array( $post_field => $original_flat ),
@@ -1034,6 +1039,7 @@ class Oli_Import_Sync_For_TranslatePress {
             $normalized = $this->convert_linebreaks( $value );
             
             if ( $normalized !== $value ) {
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Safety net normalization; cache cleared below.
                 $updated = $wpdb->update(
                     $wpdb->posts,
                     array( $field => $normalized ),
@@ -1360,6 +1366,7 @@ class Oli_Import_Sync_For_TranslatePress {
         $original_normalized = strtolower( urlencode( urldecode( $original_slug ) ) );
 
 	if ( oli_import_sync_trp_supports_identifier_placeholder() ) {
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- TranslatePress custom slug tables.
 		$original_id = $wpdb->get_var(
 			$wpdb->prepare(
 				'SELECT id FROM %i WHERE original = %s AND type = %s LIMIT 1', // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnsupportedIdentifierPlaceholder -- Version checked above.
@@ -1369,6 +1376,7 @@ class Oli_Import_Sync_For_TranslatePress {
 			)
 		);
 	} else {
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- TranslatePress custom slug tables.
 		$original_id = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT id FROM {$wpdb->prefix}trp_slug_originals WHERE original = %s AND type = %s LIMIT 1",
@@ -1379,6 +1387,7 @@ class Oli_Import_Sync_For_TranslatePress {
 	}
 
         if ( $original_id ) {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- TranslatePress custom slug tables.
             $wpdb->delete(
                 $translation_table,
                 array(
@@ -1464,25 +1473,27 @@ class Oli_Import_Sync_For_TranslatePress {
                 $en_num  = (int) $m[2];
                 if ( $en_num >= 2 ) {
                     global $wpdb;
-			if ( oli_import_sync_trp_supports_identifier_placeholder() ) {
-				$posts_table = oli_import_sync_trp_safe_table( $wpdb->posts );
-				$base_owner  = ( '' !== $posts_table ) ? $wpdb->get_var(
-					$wpdb->prepare(
-						"SELECT ID FROM %i WHERE post_name = %s AND ID <> %d AND post_status NOT IN ('trash','auto-draft') LIMIT 1", // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnsupportedIdentifierPlaceholder -- Version checked above.
-						$posts_table,
-						$en_base,
-						$post_id
-					)
-				) : null;
-			} else {
-				$base_owner = $wpdb->get_var(
-					$wpdb->prepare(
-						"SELECT ID FROM {$wpdb->posts} WHERE post_name = %s AND ID <> %d AND post_status NOT IN ('trash','auto-draft') LIMIT 1",
-						$en_base,
-						$post_id
-					)
-				);
-			}
+		if ( oli_import_sync_trp_supports_identifier_placeholder() ) {
+			$posts_table = oli_import_sync_trp_safe_table( $wpdb->posts );
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Import-time slug conflict check; not cached.
+			$base_owner  = ( '' !== $posts_table ) ? $wpdb->get_var(
+				$wpdb->prepare(
+					"SELECT ID FROM %i WHERE post_name = %s AND ID <> %d AND post_status NOT IN ('trash','auto-draft') LIMIT 1", // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnsupportedIdentifierPlaceholder -- Version checked above.
+					$posts_table,
+					$en_base,
+					$post_id
+				)
+			) : null;
+		} else {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Import-time slug conflict check; not cached.
+			$base_owner = $wpdb->get_var(
+				$wpdb->prepare(
+					"SELECT ID FROM {$wpdb->posts} WHERE post_name = %s AND ID <> %d AND post_status NOT IN ('trash','auto-draft') LIMIT 1",
+					$en_base,
+					$post_id
+				)
+			);
+		}
                     if ( $base_owner && ! preg_match( '/-' . $en_num . '$/', $translated_slug ) ) {
                         $mirrored_slug = $translated_slug . '-' . $en_num;
                         $this->log( sprintf( 'Slug disambiguator mirrored [%s] post #%d "%s" -> "%s" (EN suffix -%d)', $lang_code, $post_id, $translated_slug, $mirrored_slug, $en_num ) );
