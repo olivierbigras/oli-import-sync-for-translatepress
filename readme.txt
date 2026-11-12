@@ -3,7 +3,7 @@ Contributors: bigrat95
 Donate link: https://www.paypal.com/donate/?hosted_button_id=29SAPKFAHMTNW
 Tags: translatepress, multilingual, translation, woocommerce, wp-all-import
 Requires at least: 5.0
-Tested up to: 7.1
+Tested up to: 7.1.4
 Requires PHP: 7.4
 Stable tag: 3.17.4
 License: GPLv2 or later
