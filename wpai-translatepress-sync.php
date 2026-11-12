@@ -1360,8 +1360,8 @@ class Oli_Import_Sync_For_TranslatePress {
         $original_normalized = strtolower( urlencode( urldecode( $original_slug ) ) );
 
 	if ( oli_import_sync_trp_supports_identifier_placeholder() ) {
-		// phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnsupportedIdentifierPlaceholder -- Version checked above.
 		$original_id = $wpdb->get_var(
+			// phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnsupportedIdentifierPlaceholder -- Version checked above.
 			$wpdb->prepare(
 				'SELECT id FROM %i WHERE original = %s AND type = %s LIMIT 1',
 				$original_table,
@@ -1467,8 +1467,8 @@ class Oli_Import_Sync_For_TranslatePress {
                     global $wpdb;
 			if ( oli_import_sync_trp_supports_identifier_placeholder() ) {
 				$posts_table = oli_import_sync_trp_safe_table( $wpdb->posts );
-				// phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnsupportedIdentifierPlaceholder -- Version checked above.
 				$base_owner  = ( '' !== $posts_table ) ? $wpdb->get_var(
+					// phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnsupportedIdentifierPlaceholder -- Version checked above.
 					$wpdb->prepare(
 						"SELECT ID FROM %i WHERE post_name = %s AND ID <> %d AND post_status NOT IN ('trash','auto-draft') LIMIT 1",
 						$posts_table,
